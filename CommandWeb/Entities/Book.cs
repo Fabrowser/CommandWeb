@@ -1,4 +1,5 @@
 ﻿using CommandWeb.Entities;
+using CommandWeb.Repositorio;
 using System.Text;
 
 namespace CommandWeb.Entities
@@ -9,22 +10,23 @@ namespace CommandWeb.Entities
 
         public int IdLivro;
         public string Name;
-        public List<Author> Authors = new List<Author>();
         public double Price;
         public int Qty;
-
+        public List<Author> Authors;
 
 
         public Book()
         {
         }
 
-        public Book(int id, string name, double price, int qty)
+        public Book(int id, string name, double price, int qty, List<Author> authors)
         {
             IdLivro = id;
             Name = name;
             Price = price;
             Qty = qty;
+            Authors = authors;
+            Authors = new List<Author>(authors);
         }
 
         public Book(int id, string name, List<Author> listaAuthors, double price)
@@ -71,19 +73,25 @@ namespace CommandWeb.Entities
 
         }
 
-        public String getAuthorNames()
+        public StringBuilder getAuthorNames()
         {
+            BookRepositorioSql repo = new BookRepositorioSql();
             StringBuilder sbAutores = new StringBuilder();
-            foreach (Author autor in Authors)
+
+            List<Author> listadeAutores = new List<Author>();
+
+            foreach (Book livro in repo.Books)
             {
-
-
-                sbAutores.Append("name: " + autor.Name + "\n" +
-                    "email: " + autor.Email + "\n" +
-                    "Gender: " + autor.Gender + "\n---------------\n");
-
+                foreach (var autor in livro.Authors)
+                {
+                    if(listadeAutores.Find(a => a.Id == autor.Id) == null)
+                    {
+                        listadeAutores.Add(autor);
+                        sbAutores.Append("\n" + autor.Name);
+                    }
+                }
             }
-            return sbAutores.ToString();
+            return sbAutores;
         }
 
         public override string ToString()
@@ -91,7 +99,7 @@ namespace CommandWeb.Entities
             return "\nBook: " + Name +
                     "\nPrice: " + Price +
                     "\nQuantity: " + Qty +
-                    "\n-----------------------------\n";
+                    "\n--------------";
 
         }
 

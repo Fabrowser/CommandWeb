@@ -2,13 +2,14 @@
 {
     public class Author
     {
-
+        public int Id;
         public string Name;
         public string Email;
         public string Gender;
 
-        public Author(string name, string email, string gender)
+        public Author(int id, string name, string email, string gender)
         {
+            Id = id;
             Name = name;
             Email = email;
             Gender = gender;

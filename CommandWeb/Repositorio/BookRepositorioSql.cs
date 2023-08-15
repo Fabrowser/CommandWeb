@@ -12,16 +12,14 @@ namespace CommandWeb.Repositorio
     {
 
 
-        public List<Book> books;
-        public List<Author> authors;
+        public List<Book> Books = new List<Book>();
+        public List<Author> Authors = new List<Author>();
+
 
 
         public BookRepositorioSql()
         {
 
-            books = new List<Book>();
-            authors = new List<Author>();
-            Author autor;
 
             try
             {
@@ -30,7 +28,7 @@ namespace CommandWeb.Repositorio
                 using (SqlConnection connection = new SqlConnection(con.ConexaoDb().ConnectionString))
                 {
                     connection.Open();
-               
+
 
                     //Query com o comando de muitos para muitos
                     String sql = "select l.id_livro, l.nm_livro, l.price, l.qty, a.id_author,a.name_author,a.email, a.gender from livro as l inner join livro_autor on l.id_livro = livro_autor.id_livro \r\n      inner join autor as a on a.id_author = livro_autor.id_autor\r\n   ";
@@ -43,35 +41,51 @@ namespace CommandWeb.Repositorio
 
                             while (reader.Read())
                             {
-                                Book livro = new Book(reader.GetInt32(0), reader.GetString(1), authors, reader.GetFloat(2), reader.GetInt32(3));
 
-                                if (books.Find(id => id.IdLivro == livro.IdLivro) == null)
-                                //Pesquisa se o livro ja tem na lista. Caso não , adiciona
-                                {
-                                    books.Add(livro);
-                                    
-                                }
+                                int idLivro = reader.GetInt32(0);
+                                string nomeLivro = reader.GetString(1);
+                                double precoLivro = reader.GetFloat(2);
+                                int qtdLivro = reader.GetInt32(3);
 
-                                autor = new Author(reader.GetString(5), reader.GetString(6), reader.GetString(7));
-                                if (livro.Authors.Contains(autor))
+                                int idAutor = reader.GetInt32(4);
+                                String nomeAutor = reader.GetString(5);
+                                String emailAutor = reader.GetString(6);
+                                String GeneroAutor = reader.GetString(7);
+
+                                if (Books.Find(l => l.IdLivro == idLivro) == null)
                                 {
+                                    Book livro = new Book(idLivro, nomeLivro, precoLivro, qtdLivro, Authors);
+                                    Books.Add(livro);
+                                    Author autor = new Author(idAutor, nomeAutor, emailAutor, GeneroAutor);
+                                    livro.Authors.Add(autor);
+
 
                                 }
                                 else
                                 {
-                                    livro.Authors.Add(autor);
 
+                                    Author autor = new Author(reader.GetInt32(4), reader.GetString(5), reader.GetString(6), reader.GetString(7));
+
+                                    foreach (Book book in Books)
+                                    {
+                                        if (book.IdLivro == idLivro)
+                                        {
+                                            book.Authors.Add(autor);
+                                        }
+
+                                    }
+
+
+                                    //Console.WriteLine("{0} {1}", reader.GetString(1), reader.GetString(5));
                                 }
 
+
+
                             }
-
-                            //Console.WriteLine("{0} {1}", reader.GetString(1), reader.GetString(5));
                         }
-
-
-
                     }
                 }
+
             }
             catch (SqlException e)
             {

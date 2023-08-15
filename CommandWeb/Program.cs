@@ -11,9 +11,3 @@ IWebHost host = new WebHostBuilder()
 
 host.Run();
 
-
-static void ImprimeLista(BookRepositorioSql lista)
-{
-    Console.WriteLine(lista);
-
-}

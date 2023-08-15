@@ -9,6 +9,7 @@ namespace CommandWeb
 {
     public class Startup
     {
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRouting();
@@ -35,9 +36,9 @@ namespace CommandWeb
             var _repo = new BookRepositorioSql();
             StringBuilder stbook = new StringBuilder();
 
-            foreach (var book in _repo.books)
+            foreach (var book in _repo.Books)
             {
-                stbook.Append(book.getName());
+                stbook.Append(book.getName()+"\n");
             }
             return context.Response.WriteAsync("Nome dos Livros: \n-------------------------" +
                 "\n" + stbook.ToString());
@@ -52,7 +53,7 @@ namespace CommandWeb
             var _repo = new BookRepositorioSql();
             StringBuilder stbook = new StringBuilder();
 
-            foreach (var book in _repo.books)
+            foreach (var book in _repo.Books)
             {
                 stbook.Append(book.ToString());
             }
@@ -67,14 +68,9 @@ namespace CommandWeb
         {
 
             var _repo = new BookRepositorioSql();
-            StringBuilder stauthors = new StringBuilder();
-
-            foreach (var author in _repo.authors)
-            {
-                stauthors.Append(author.ToString());
-            }
+            Book livro = new Book();
             return context.Response.WriteAsync("Lista de Autores: \n-------------------------" +
-                "\n" + stauthors.ToString());
+                "\n" + livro.getAuthorNames());
 
 
         }
@@ -85,12 +81,18 @@ namespace CommandWeb
             var _repo = new BookRepositorioSql();
             StringBuilder stlivrosAutores = new StringBuilder();
 
-            foreach (var book in _repo.books)
+            foreach (var book in _repo.Books)
             {
-                stlivrosAutores.Append(book.ToString());
-                stlivrosAutores.Append("Autores\n\n");
-                stlivrosAutores.Append(book.getAuthorNames());
+                stlivrosAutores.Append(book.ToString() + "\nAutores: \n");
+                foreach (Author autor in book.Authors)
+                {
+                    stlivrosAutores.Append(autor.Name  + "\n");
+                }
+                stlivrosAutores.Append("-------------------------------------\n");
+
             }
+           
+
             return context.Response.WriteAsync("Lista de Livros e Autores: \n-------------------------------------" +
                 "\n" + stlivrosAutores.ToString() + "-------------------------------------");
 
